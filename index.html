@@ -98,7 +98,33 @@
         .api-instructions li {
             margin-bottom: 10px;
         }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .processing-indicator {
+            display: none;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background-color: var(--secondary-bg);
+            animation: pulse 2s infinite;
+        }
+
+        .processing-indicator i {
+            margin-left: 8px;
+        }
+
+        .time-elapsed {
+            font-size: 0.9em;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -159,6 +185,12 @@
                 </div>
                 <button class="btn btn-primary" onclick="handleAudioFile()">תמלל</button>
                 
+                <div class="processing-indicator" id="processingIndicator">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span id="processingStatus">מתחיל תמלול...</span>
+                    <div class="time-elapsed" id="timeElapsed"></div>
+                </div>
+
                 <div class="progress mt-3" style="display: none;">
                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
                 </div>
@@ -218,6 +250,11 @@
             const file = fileInput.files[0];
             const language = document.getElementById('language').value;
             
+            // התחלת מדידת זמן וחיווי
+            let startTime = new Date();
+            showProcessingStatus('מתחיל תמלול...');
+            let processingTimer = setInterval(updateTimeElapsed, 1000);
+            
             // הצגת שורת התקדמות
             const progressBar = document.querySelector('.progress');
             progressBar.style.display = 'block';
@@ -230,7 +267,7 @@
                 
                 // תמלול כל חלק
                 for (let i = 0; i < chunks.length; i++) {
-                    showStatus(`מתמלל חלק ${i + 1} מתוך ${chunks.length}...`, 'info');
+                    showProcessingStatus(`מתמלל חלק ${i + 1} מתוך ${chunks.length}...`);
                     
                     const formData = new FormData();
                     formData.append('file', chunks[i]);
@@ -266,6 +303,7 @@
             } catch (error) {
                 showError(`התמלול נכשל: ${error.message}`);
             } finally {
+                hideProcessingStatus();
                 progressBar.style.display = 'none';
             }
         }
@@ -327,6 +365,34 @@
             status.className = `alert alert-${type} mt-2`;
             status.style.display = 'block';
             setTimeout(() => status.style.display = 'none', 3000);
+        }
+
+        let startTime;
+        let processingTimer;
+
+        function updateTimeElapsed() {
+            const now = new Date();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('timeElapsed').textContent = 
+                `זמן שחלף: ${minutes} דקות ו-${seconds} שניות`;
+        }
+
+        function showProcessingStatus(message) {
+            const indicator = document.getElementById('processingIndicator');
+            const statusElement = document.getElementById('processingStatus');
+            
+            indicator.style.display = 'block';
+            statusElement.textContent = message;
+        }
+
+        function hideProcessingStatus() {
+            const indicator = document.getElementById('processingIndicator');
+            indicator.style.display = 'none';
+            if (processingTimer) {
+                clearInterval(processingTimer);
+            }
         }
     </script>
 </body>
