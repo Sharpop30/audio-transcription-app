@@ -203,37 +203,66 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // פונקציה לחלוקת הקובץ
-        async function splitAudioFile(file) {
-            const chunkSize = 24 * 1024 * 1024; // 24MB לכל חלק
-            const chunks = [];
-            
-            if (file.size <= chunkSize) {
-                return [file];
-            }
+        // משתנים גלובליים למעקב אחר זמן
+        let startTime = null;
+        let processingTimer = null;
+        let isProcessing = false;
 
-            showStatus('מחלק את הקובץ לחלקים קטנים...', 'info');
+        // פונקציה לעדכון הזמן שחלף
+        function updateTimeElapsed() {
+            if (!startTime || !isProcessing) return;
             
-            // חלוקת הקובץ לחלקים
-            for (let start = 0; start < file.size; start += chunkSize) {
-                const chunk = file.slice(start, start + chunkSize);
-                chunks.push(new File([chunk], `chunk-${chunks.length}.${file.name.split('.').pop()}`, {
-                    type: file.type
-                }));
+            const now = new Date();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            
+            const timeElapsedElement = document.getElementById('timeElapsed');
+            if (timeElapsedElement) {
+                timeElapsedElement.textContent = 
+                    `זמן שחלף: ${minutes} דקות ו-${seconds} שניות`;
             }
-
-            return chunks;
         }
 
-        // פונקציה להצגת סטטוס
-        function showStatus(message, type = 'info') {
-            const status = document.getElementById('status');
-            status.textContent = message;
-            status.className = `alert alert-${type} mt-3`;
-            status.style.display = 'block';
+        // פונקציה להתחלת המונה
+        function startTimer() {
+            isProcessing = true;
+            startTime = new Date();
+            if (processingTimer) {
+                clearInterval(processingTimer);
+            }
+            processingTimer = setInterval(updateTimeElapsed, 1000);
+            updateTimeElapsed(); // עדכון ראשוני מיידי
         }
 
-        // פונקציה לטיפול בקובץ
+        // פונקציה לעצירת המונה
+        function stopTimer() {
+            isProcessing = false;
+            if (processingTimer) {
+                clearInterval(processingTimer);
+                processingTimer = null;
+            }
+            startTime = null;
+        }
+
+        function showProcessingStatus(message) {
+            const indicator = document.getElementById('processingIndicator');
+            const statusElement = document.getElementById('processingStatus');
+            
+            if (indicator && statusElement) {
+                indicator.style.display = 'block';
+                statusElement.textContent = message;
+            }
+        }
+
+        function hideProcessingStatus() {
+            const indicator = document.getElementById('processingIndicator');
+            if (indicator) {
+                indicator.style.display = 'none';
+            }
+            stopTimer();
+        }
+
         async function handleAudioFile() {
             const apiKey = localStorage.getItem('openai_api_key');
             if (!apiKey) {
@@ -250,19 +279,44 @@
             const file = fileInput.files[0];
             const language = document.getElementById('language').value;
             
-            // איפוס והתחלת מדידת זמן
-            if (processingTimer) {
-                clearInterval(processingTimer);
-            }
-            startTime = new Date();
-            processingTimer = setInterval(updateTimeElapsed, 1000);
-            
-            // הצגת חיווי התקדמות
+            // התחלת מעקב זמן וחיווי התקדמות
             showProcessingStatus('מתחיל תמלול...');
+            startTimer();
+            
             const progressBar = document.querySelector('.progress');
             progressBar.style.display = 'block';
             
             try {
+                // פונקציה לחלוקת הקובץ
+                async function splitAudioFile(file) {
+                    const chunkSize = 24 * 1024 * 1024; // 24MB לכל חלק
+                    const chunks = [];
+                    
+                    if (file.size <= chunkSize) {
+                        return [file];
+                    }
+
+                    showStatus('מחלק את הקובץ לחלקים קטנים...', 'info');
+                    
+                    // חלוקת הקובץ לחלקים
+                    for (let start = 0; start < file.size; start += chunkSize) {
+                        const chunk = file.slice(start, start + chunkSize);
+                        chunks.push(new File([chunk], `chunk-${chunks.length}.${file.name.split('.').pop()}`, {
+                            type: file.type
+                        }));
+                    }
+
+                    return chunks;
+                }
+
+                // פונקציה להצגת סטטוס
+                function showStatus(message, type = 'info') {
+                    const status = document.getElementById('status');
+                    status.textContent = message;
+                    status.className = `alert alert-${type} mt-3`;
+                    status.style.display = 'block';
+                }
+
                 // חלוקת הקובץ אם צריך
                 const chunks = await splitAudioFile(file);
                 const transcriptions = [];
@@ -368,34 +422,6 @@
             status.className = `alert alert-${type} mt-2`;
             status.style.display = 'block';
             setTimeout(() => status.style.display = 'none', 3000);
-        }
-
-        let startTime;
-        let processingTimer;
-
-        function updateTimeElapsed() {
-            const now = new Date();
-            const elapsed = Math.floor((now - startTime) / 1000);
-            const minutes = Math.floor(elapsed / 60);
-            const seconds = elapsed % 60;
-            document.getElementById('timeElapsed').textContent = 
-                `זמן שחלף: ${minutes} דקות ו-${seconds} שניות`;
-        }
-
-        function showProcessingStatus(message) {
-            const indicator = document.getElementById('processingIndicator');
-            const statusElement = document.getElementById('processingStatus');
-            
-            indicator.style.display = 'block';
-            statusElement.textContent = message;
-        }
-
-        function hideProcessingStatus() {
-            const indicator = document.getElementById('processingIndicator');
-            indicator.style.display = 'none';
-            if (processingTimer) {
-                clearInterval(processingTimer);
-            }
         }
     </script>
 </body>
