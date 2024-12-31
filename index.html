@@ -123,6 +123,47 @@
             color: var(--text-muted);
             margin-top: 5px;
         }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .transcription-history {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--secondary-bg);
+        }
+
+        .history-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: var(--bg-color);
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .history-meta {
+            font-size: 0.8em;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
@@ -197,6 +238,12 @@
 
                 <div id="status" class="alert mt-3" style="display: none;"></div>
                 <div id="result" class="mt-3"></div>
+                
+                <!-- היסטוריית תמלולים -->
+                <div id="transcriptionHistory" class="transcription-history" style="display: none;">
+                    <h5>היסטוריית תמלולים</h5>
+                    <div id="historyItems"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -365,17 +412,101 @@
             }
         }
 
+        // פונקציה להורדת הטקסט כקובץ
+        function downloadTranscription(text) {
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `transcription_${new Date().toISOString().slice(0,10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // פונקציה לשמירת תמלול בהיסטוריה
+        function saveToHistory(text, fileName, language) {
+            const history = JSON.parse(localStorage.getItem('transcriptionHistory') || '[]');
+            history.unshift({
+                text,
+                fileName,
+                language,
+                timestamp: new Date().toISOString()
+            });
+            
+            // שמירת מקסימום 10 תמלולים אחרונים
+            if (history.length > 10) {
+                history.pop();
+            }
+            
+            localStorage.setItem('transcriptionHistory', JSON.stringify(history));
+            updateHistoryDisplay();
+        }
+
+        // פונקציה לעדכון תצוגת ההיסטוריה
+        function updateHistoryDisplay() {
+            const history = JSON.parse(localStorage.getItem('transcriptionHistory') || '[]');
+            const historyContainer = document.getElementById('transcriptionHistory');
+            const historyItems = document.getElementById('historyItems');
+            
+            if (history.length === 0) {
+                historyContainer.style.display = 'none';
+                return;
+            }
+            
+            historyContainer.style.display = 'block';
+            historyItems.innerHTML = '';
+            
+            history.forEach((item, index) => {
+                const date = new Date(item.timestamp).toLocaleDateString('he-IL');
+                const time = new Date(item.timestamp).toLocaleTimeString('he-IL');
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'history-item fade-in';
+                itemElement.innerHTML = `
+                    <div class="history-meta">
+                        <strong>קובץ:</strong> ${item.fileName} | 
+                        <strong>תאריך:</strong> ${date} ${time} | 
+                        <strong>שפה:</strong> ${item.language}
+                    </div>
+                    <div class="text-truncate">${item.text.substring(0, 100)}...</div>
+                    <div class="result-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('${item.text.replace(/'/g, "\\'")}')">
+                            העתק
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="downloadTranscription('${item.text.replace(/'/g, "\\'")}')">
+                            הורד
+                        </button>
+                    </div>
+                `;
+                historyItems.appendChild(itemElement);
+            });
+        }
+
         function showResult(text) {
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `
-                <div class="alert alert-success">
+                <div class="alert alert-success fade-in">
                     <h5>תוצאת התמלול:</h5>
                     <p>${text}</p>
-                    <button class="btn btn-sm btn-outline-success mt-2" onclick="copyToClipboard('${text.replace(/'/g, "\\'")}')">
-                        העתק לזיכרון
-                    </button>
+                    <div class="result-actions">
+                        <button class="btn btn-outline-primary" onclick="copyToClipboard('${text.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-copy"></i> העתק לזיכרון
+                        </button>
+                        <button class="btn btn-outline-success" onclick="downloadTranscription('${text.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-download"></i> הורד כקובץ
+                        </button>
+                    </div>
                 </div>
             `;
+
+            // שמירה בהיסטוריה
+            const fileInput = document.getElementById('audioFile');
+            const language = document.getElementById('language');
+            if (fileInput.files[0] && language) {
+                saveToHistory(text, fileInput.files[0].name, language.options[language.selectedIndex].text);
+            }
         }
 
         function copyToClipboard(text) {
@@ -423,6 +554,9 @@
             status.style.display = 'block';
             setTimeout(() => status.style.display = 'none', 3000);
         }
+
+        // טעינת היסטוריה בטעינת הדף
+        window.addEventListener('load', updateHistoryDisplay);
     </script>
 </body>
 </html>
