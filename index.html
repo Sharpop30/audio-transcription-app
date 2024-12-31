@@ -14,6 +14,10 @@
             --success-color: #27ae60;
             --warning-color: #f39c12;
             --error-color: #e74c3c;
+            --bg-color: #ffffff;
+            --secondary-bg: #f8f9fa;
+            --text-color: #2c3e50;
+            --text-muted: #7f8c8d;
         }
 
         body { 
@@ -164,14 +168,49 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        .app-title {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 0.5em;
+            padding: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .app-title i {
+            margin-left: 10px;
+            color: var(--primary-color);
+            animation: pulse 2s infinite;
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 2em;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1em;
+            margin-top: -0.5em;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <h1 class="mb-4 text-center">אפליקציית תמלול אודיו</h1>
-        <p class="text-center mb-4" style="color: var(--text-color);">כל הזכויות שמורות לסהר פורר</p>
-        
+        <div class="title-container">
+            <h1 class="app-title">
+                <i class="fas fa-microphone-alt"></i>
+                אפליקציית תמלול אודיו
+            </h1>
+            <p class="subtitle">תמלול מהיר ומדויק בעברית ובשפות נוספות</p>
+            <p class="text-center mb-4" style="color: var(--text-color);">כל הזכויות שמורות לסהר פורר</p>
+        </div>
         <!-- API Key Section -->
         <div class="card">
             <div class="card-body">
