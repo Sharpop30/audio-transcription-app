@@ -1,74 +1,129 @@
 # Audio Transcription App
 
-This is a web application that allows users to upload audio files and receive transcriptions in their desired language using OpenAI's Whisper API.
+A web application that allows users to upload audio files and receive transcriptions in their desired language using OpenAI's Whisper API. The application supports multiple languages, including Arabic, and can handle large audio files by automatically splitting them into manageable chunks.
 
-## Features
+## Requirements
 
-- Upload audio files (supports MP3, WAV, M4A, and OGG formats)
-- Support for files larger than 16GB (automatically splits into chunks)
-- Multiple language support including Arabic
-- Real-time transcription using OpenAI's Whisper API
-- Simple and intuitive user interface
-- Secure API key management (stored in browser's local storage)
+### 1. System Requirements
+- Windows, macOS, or Linux operating system
+- Python 3.8 or higher
+- FFmpeg (included in the repository)
+- 2GB RAM minimum (4GB recommended)
+- Sufficient disk space for audio processing
 
-## Prerequisites
+### 2. API Requirements
+- OpenAI API key (get one from https://platform.openai.com/api-keys)
+  - Free tier available
+  - Pay-as-you-go pricing for larger usage
 
-1. Python 3.8 or higher
-2. FFmpeg (required for audio processing)
-   - Windows: Download from https://ffmpeg.org/download.html
-   - Add FFmpeg to your system PATH
+### 3. Python Dependencies
+```bash
+flask==3.0.0
+openai>=1.6.1
+python-dotenv==1.0.0
+pydub==0.25.1
+Werkzeug==3.0.1
+```
 
-3. OpenAI API key (users will input their own key in the web interface)
+## Installation
 
-## Setup
-
-1. Install FFmpeg:
-   - Download FFmpeg from https://ffmpeg.org/download.html
-   - Extract the files
-   - Add the bin folder to your system PATH
-
-2. Install Python dependencies:
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/Sharpop30/audio-transcription-app.git
+   cd audio-transcription-app
    ```
+
+2. **Install Python Dependencies**
+   ```bash
    pip install -r requirements.txt
    ```
 
-3. Run the application:
-   ```
-   python app.py
-   ```
-
-4. Open your browser and go to `http://localhost:5000`
+3. **FFmpeg Setup**
+   - FFmpeg is already included in the repository
+   - No additional setup required
 
 ## Usage
 
-1. Enter your OpenAI API key in the setup section
-   - Get your API key from https://platform.openai.com/api-keys
-   - The key is stored securely in your browser's local storage
-   - Never shared or stored on the server
+1. **Start the Application**
+   ```bash
+   python app.py
+   ```
 
-2. Click "Choose File" to select an audio file
-3. Select the desired target language from the dropdown
-4. Click "Transcribe"
-5. For files larger than 15MB, you'll see a progress indicator
-6. The transcription will appear below once complete
+2. **Access the Web Interface**
+   - Open your web browser
+   - Go to `http://127.0.0.1:5000`
 
-## Supported File Types
+3. **Using the Application**
+   - Enter your OpenAI API key in the setup section
+   - Select an audio file (supported formats: MP3, WAV, M4A, OGG)
+   - Choose the target language
+   - Click "Transcribe"
+   - Wait for the transcription to complete
+
+## Features
+
+- **Multiple Language Support**
+  - Arabic (العربية)
+  - English
+  - Spanish
+  - French
+  - German
+  - Italian
+  - Portuguese
+  - Dutch
+  - Russian
+  - Japanese
+  - Korean
+  - Chinese
+  - And more...
+
+- **Large File Support**
+  - Handles files larger than 15MB
+  - Automatic file splitting and processing
+  - Progress tracking for large files
+
+- **Security Features**
+  - API keys stored locally in browser
+  - No server-side API key storage
+  - Secure file handling
+
+## File Format Support
 
 - MP3 (.mp3)
 - WAV (.wav)
 - M4A (.m4a)
 - OGG (.ogg)
 
-## Large File Handling
+## Limitations
 
-- Files larger than 15MB will be automatically split into chunks
-- Each chunk is processed separately and then combined
-- Progress is shown for large file processing
-- Supports files up to 16GB
+- Maximum file size: 16GB
+- Audio quality affects transcription accuracy
+- Internet connection required
+- API usage subject to OpenAI's pricing and rate limits
 
-## Security Notes
+## Troubleshooting
 
-- API keys are never stored on the server
-- Keys are stored locally in your browser's localStorage
-- Each request requires the API key to be sent
-- Use HTTPS in production to ensure secure transmission of API keys
+1. **FFmpeg Issues**
+   - If you see FFmpeg-related errors, ensure the application has access to the ffmpeg folder
+   - The ffmpeg folder should be in the same directory as app.py
+
+2. **API Key Issues**
+   - Ensure your OpenAI API key is valid
+   - Check if you have sufficient credits in your OpenAI account
+   - Make sure you're connected to the internet
+
+3. **File Upload Issues**
+   - Check if the file format is supported
+   - Ensure the file isn't corrupted
+   - For large files, be patient during upload and processing
+
+## Support
+
+For issues, questions, or contributions, please:
+1. Open an issue on GitHub
+2. Submit a pull request
+3. Contact the maintainer
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
