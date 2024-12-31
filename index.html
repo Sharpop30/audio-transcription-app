@@ -250,12 +250,15 @@
             const file = fileInput.files[0];
             const language = document.getElementById('language').value;
             
-            // התחלת מדידת זמן וחיווי
-            let startTime = new Date();
-            showProcessingStatus('מתחיל תמלול...');
-            let processingTimer = setInterval(updateTimeElapsed, 1000);
+            // איפוס והתחלת מדידת זמן
+            if (processingTimer) {
+                clearInterval(processingTimer);
+            }
+            startTime = new Date();
+            processingTimer = setInterval(updateTimeElapsed, 1000);
             
-            // הצגת שורת התקדמות
+            // הצגת חיווי התקדמות
+            showProcessingStatus('מתחיל תמלול...');
             const progressBar = document.querySelector('.progress');
             progressBar.style.display = 'block';
             
