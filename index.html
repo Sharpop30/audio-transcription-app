@@ -10,11 +10,9 @@
     <style>
         :root {
             --primary-color: #4a90e2;
-            --secondary-color: #f8f9fa;
-            --accent-color: #34495e;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --error-color: #e74c3c;
+            --secondary-color: #f39c12;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
             --bg-color: #ffffff;
             --secondary-bg: #f8f9fa;
             --text-color: #2c3e50;
@@ -22,9 +20,57 @@
         }
 
         body { 
-            padding: 20px; 
-            background-color: var(--secondary-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-top: 2rem;
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4a90e2, #f39c12);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .header-icon {
+            font-size: 2rem;
+            margin-left: 0.5rem;
+            color: #4a90e2;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .header-container {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 1rem;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,255,255,0.8));
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-subtitle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin: 1rem 0;
+        }
+
+        .header-copyright {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 1rem;
         }
 
         .container { 
@@ -43,7 +89,7 @@
         }
 
         .card-title {
-            color: var(--accent-color);
+            color: var(--primary-color);
             font-weight: bold;
             margin-bottom: 1.5rem;
         }
@@ -57,7 +103,7 @@
         }
 
         .btn-primary:hover {
-            background-color: var(--accent-color);
+            background-color: var(--secondary-color);
             transform: translateY(-2px);
         }
 
@@ -212,13 +258,13 @@
 </head>
 <body>
     <div class="container">
-        <div class="title-container">
-            <h1 class="app-title">
-                <i class="fas fa-microphone-alt"></i>
+        <div class="header-container">
+            <h1 class="header-title">
+                <i class="fas fa-microphone-alt header-icon"></i>
                 אפליקציית תמלול אודיו
             </h1>
-            <p class="subtitle">תמלול מהיר ומדויק בעברית ובשפות נוספות</p>
-            <p class="copyright">כל הזכויות שמורות לסהר פורר</p>
+            <p class="header-subtitle">תמלול מהיר ומדויק בעברית ובשפות נוספות</p>
+            <p class="header-copyright">כל הזכויות שמורות לסהר פורר</p>
         </div>
         <!-- API Key Section -->
         <div class="card">
