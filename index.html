@@ -1,61 +1,160 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Transcription App</title>
+    <title>אפליקציית תמלול אודיו</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { padding: 20px; }
-        .container { max-width: 800px; }
-        #apiKeyStatus { display: none; }
-        .progress { display: none; }
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f8f9fa;
+            --accent-color: #34495e;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --error-color: #e74c3c;
+        }
+
+        body { 
+            padding: 20px; 
+            background-color: var(--secondary-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container { 
+            max-width: 800px; 
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card-title {
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        #apiKeyStatus { 
+            display: none; 
+        }
+
+        .progress { 
+            display: none;
+            height: 10px;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+        }
+
+        .alert {
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .api-instructions {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .api-instructions ol {
+            padding-right: 20px;
+        }
+
+        .api-instructions li {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="mb-4">Audio Transcription App</h1>
+        <h1 class="mb-4 text-center">אפליקציית תמלול אודיו</h1>
         
         <!-- API Key Section -->
-        <div class="card mb-4">
+        <div class="card">
             <div class="card-body">
-                <h5 class="card-title">OpenAI API Key Setup</h5>
+                <h5 class="card-title">הגדרת מפתח API של OpenAI</h5>
                 <div class="mb-3">
-                    <label for="apiKey" class="form-label">Enter your OpenAI API Key</label>
+                    <label for="apiKey" class="form-label">הכנס את מפתח ה-API שלך</label>
                     <input type="password" class="form-control" id="apiKey" placeholder="sk-...">
-                    <div class="form-text">Your API key is stored locally in your browser and never sent to any server except OpenAI.</div>
+                    <div class="form-text">המפתח נשמר מקומית בדפדפן שלך ונשלח ישירות ל-OpenAI</div>
                 </div>
-                <button class="btn btn-primary" onclick="saveApiKey()">Save API Key</button>
+                <button class="btn btn-primary" onclick="saveApiKey()">שמור מפתח API</button>
                 <div id="apiKeyStatus" class="alert mt-2"></div>
+
+                <div class="api-instructions">
+                    <h6>איך להשיג מפתח API:</h6>
+                    <ol>
+                        <li>היכנס ל-<a href="https://platform.openai.com/signup" target="_blank">OpenAI Platform</a> וצור חשבון</li>
+                        <li>לאחר ההרשמה, לחץ על "View API Keys" בתפריט</li>
+                        <li>לחץ על "+ Create new secret key"</li>
+                        <li>העתק את המפתח והדבק אותו כאן</li>
+                        <li>שים לב: OpenAI מציע קרדיט חינם של $5 למשתמשים חדשים</li>
+                    </ol>
+                </div>
             </div>
         </div>
 
         <!-- Transcription Section -->
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Audio Transcription</h5>
+                <h5 class="card-title">תמלול אודיו</h5>
                 <div class="mb-3">
-                    <label for="audioFile" class="form-label">Select Audio File</label>
+                    <label for="audioFile" class="form-label">בחר קובץ אודיו</label>
                     <input type="file" class="form-control" id="audioFile" accept=".mp3,.wav,.m4a,.ogg">
                 </div>
                 <div class="mb-3">
-                    <label for="language" class="form-label">Target Language</label>
+                    <label for="language" class="form-label">בחר שפה</label>
                     <select class="form-control" id="language">
-                        <option value="en">English</option>
-                        <option value="ar">Arabic (العربية)</option>
-                        <option value="es">Spanish (Español)</option>
-                        <option value="fr">French (Français)</option>
-                        <option value="de">German (Deutsch)</option>
-                        <option value="it">Italian (Italiano)</option>
-                        <option value="pt">Portuguese (Português)</option>
-                        <option value="nl">Dutch (Nederlands)</option>
-                        <option value="ru">Russian (Русский)</option>
-                        <option value="ja">Japanese (日本語)</option>
-                        <option value="ko">Korean (한국어)</option>
-                        <option value="zh">Chinese (中文)</option>
+                        <option value="he">עברית</option>
+                        <option value="ar">ערבית (العربية)</option>
+                        <option value="en">אנגלית (English)</option>
+                        <option value="es">ספרדית (Español)</option>
+                        <option value="fr">צרפתית (Français)</option>
+                        <option value="de">גרמנית (Deutsch)</option>
+                        <option value="it">איטלקית (Italiano)</option>
+                        <option value="pt">פורטוגזית (Português)</option>
+                        <option value="nl">הולנדית (Nederlands)</option>
+                        <option value="ru">רוסית (Русский)</option>
+                        <option value="ja">יפנית (日本語)</option>
+                        <option value="ko">קוריאנית (한국어)</option>
+                        <option value="zh">סינית (中文)</option>
                     </select>
                 </div>
-                <button class="btn btn-primary" onclick="transcribeAudio()">Transcribe</button>
+                <button class="btn btn-primary" onclick="transcribeAudio()">תמלל</button>
                 
                 <div class="progress mt-3">
                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
@@ -73,7 +172,7 @@
             const storedKey = localStorage.getItem('openai_api_key');
             if (storedKey) {
                 document.getElementById('apiKey').value = storedKey;
-                showApiKeyStatus('API key loaded from storage', 'success');
+                showApiKeyStatus('מפתח API נטען בהצלחה', 'success');
             }
         };
 
@@ -81,9 +180,9 @@
             const apiKey = document.getElementById('apiKey').value.trim();
             if (apiKey) {
                 localStorage.setItem('openai_api_key', apiKey);
-                showApiKeyStatus('API key saved successfully', 'success');
+                showApiKeyStatus('מפתח API נשמר בהצלחה', 'success');
             } else {
-                showApiKeyStatus('Please enter an API key', 'danger');
+                showApiKeyStatus('אנא הכנס מפתח API', 'danger');
             }
         }
 
@@ -98,13 +197,13 @@
         async function transcribeAudio() {
             const apiKey = localStorage.getItem('openai_api_key');
             if (!apiKey) {
-                showError('Please save your OpenAI API key first');
+                showError('אנא הכנס מפתח API תחילה');
                 return;
             }
 
             const fileInput = document.getElementById('audioFile');
             if (!fileInput.files.length) {
-                showError('Please select an audio file');
+                showError('אנא בחר קובץ אודיו');
                 return;
             }
 
@@ -132,13 +231,13 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
+                    throw new Error(`שגיאה: ${response.status}`);
                 }
 
                 const data = await response.json();
                 showResult(data.text);
             } catch (error) {
-                showError(`Transcription failed: ${error.message}`);
+                showError(`התמלול נכשל: ${error.message}`);
             } finally {
                 progressBar.style.display = 'none';
             }
@@ -148,7 +247,7 @@
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `
                 <div class="alert alert-success">
-                    <h5>Transcription Result:</h5>
+                    <h5>תוצאת התמלול:</h5>
                     <p>${text}</p>
                 </div>
             `;

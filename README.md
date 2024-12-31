@@ -1,84 +1,86 @@
-# Audio Transcription App
+# אפליקציית תמלול אודיו
 
-A browser-based application that allows users to transcribe audio files using OpenAI's Whisper API. The application supports multiple languages, including Arabic, and runs entirely in your web browser.
+אפליקציה המאפשרת למשתמשים לתמלל קבצי אודיו באמצעות ממשק פשוט וידידותי. האפליקציה תומכת במגוון שפות כולל עברית וערבית, ופועלת ישירות בדפדפן שלך.
 
-## 🌟 Features
+## ✨ תכונות עיקריות
 
-- **Multiple Language Support**: Transcribe audio in various languages including Arabic, English, Spanish, and more
-- **Simple Interface**: Easy-to-use web interface
-- **Secure**: Your OpenAI API key is stored locally in your browser
-- **No Installation Required**: Works directly in your web browser
-- **Free to Use**: Just need your own OpenAI API key
+- **תמיכה במגוון שפות**: תמלול בעברית, ערבית, אנגלית ושפות נוספות
+- **ממשק פשוט**: ממשק משתמש נוח וקל לשימוש
+- **אבטחה**: מפתח ה-API שלך נשמר מקומית בדפדפן שלך
+- **ללא התקנה**: עובד ישירות בדפדפן
+- **חינמי לשימוש**: נדרש רק מפתח API של OpenAI
 
-## 🚀 Quick Start
+## 🚀 התחלה מהירה
 
-1. **Get an OpenAI API Key**:
-   - Go to https://platform.openai.com/api-keys
-   - Create an account or log in
-   - Create a new API key
-   - Keep this key safe - you'll need it to use the app
+1. **השג מפתח API של OpenAI**:
+   - היכנס ל-https://platform.openai.com/api-keys
+   - צור חשבון או התחבר
+   - צור מפתח API חדש
+   - שמור את המפתח - תצטרך אותו לשימוש באפליקציה
+   - משתמשים חדשים מקבלים $5 קרדיט חינם
 
-2. **Use the App**:
-   - Open https://sharpop30.github.io/audio-transcription-app
-   - Enter your OpenAI API key
-   - Select an audio file
-   - Choose your target language
-   - Click "Transcribe"
+2. **השתמש באפליקציה**:
+   - פתח את https://sharpop30.github.io/audio-transcription-app
+   - הכנס את מפתח ה-API שלך
+   - בחר קובץ אודיו
+   - בחר את השפה הרצויה
+   - לחץ על "תמלל"
 
-## 💡 Supported Features
+## 💡 פורמטים נתמכים
 
-### Audio Formats
+### פורמטי אודיו
 - MP3 (.mp3)
 - WAV (.wav)
 - M4A (.m4a)
 - OGG (.ogg)
 
-### Languages
-- Arabic (العربية)
-- English
-- Spanish (Español)
-- French (Français)
-- German (Deutsch)
-- Italian (Italiano)
-- Portuguese (Português)
-- Dutch (Nederlands)
-- Russian (Русский)
-- Japanese (日本語)
-- Korean (한국어)
-- Chinese (中文)
-- And more...
+### שפות נתמכות
+- עברית
+- ערבית (العربية)
+- אנגלית (English)
+- ספרדית (Español)
+- צרפתית (Français)
+- גרמנית (Deutsch)
+- איטלקית (Italiano)
+- פורטוגזית (Português)
+- הולנדית (Nederlands)
+- רוסית (Русский)
+- יפנית (日本語)
+- קוריאנית (한국어)
+- סינית (中文)
+- ועוד...
 
-## 📝 Notes
+## 📝 הערות חשובות
 
-- **File Size Limit**: OpenAI's API has a 25MB file size limit
-- **API Costs**: Check OpenAI's pricing at https://openai.com/pricing
-- **Privacy**: Your API key and audio files are processed directly with OpenAI and never stored on any server
+- **מגבלת גודל קובץ**: API של OpenAI מוגבל לקבצים עד 25MB
+- **עלויות API**: בדוק את המחירים ב-https://openai.com/pricing
+- **פרטיות**: המפתח שלך וקבצי האודיו מעובדים ישירות מול OpenAI ולא נשמרים בשום שרת
 
-## 🔒 Security
+## 🔒 אבטחה
 
-- Your OpenAI API key is stored only in your browser's local storage
-- Audio files are sent directly to OpenAI's servers
-- No server-side processing or storage of your data
+- מפתח ה-API שלך נשמר רק בדפדפן שלך
+- קבצי אודיו נשלחים ישירות לשרתי OpenAI
+- אין עיבוד או אחסון של המידע שלך בשרתים שלנו
 
-## ⚠️ Troubleshooting
+## ⚠️ פתרון בעיות
 
-1. **API Key Issues**:
-   - Ensure your OpenAI API key is valid
-   - Check if you have sufficient credits in your OpenAI account
-   - Make sure you're connected to the internet
+1. **בעיות במפתח API**:
+   - ודא שמפתח ה-API תקין
+   - בדוק שיש לך מספיק קרדיט בחשבון OpenAI שלך
+   - ודא שיש לך חיבור לאינטרנט
 
-2. **File Issues**:
-   - Check if your file is in a supported format
-   - Ensure the file size is under 25MB
-   - Make sure the file isn't corrupted
+2. **בעיות בקבצים**:
+   - ודא שהקובץ בפורמט נתמך
+   - ודא שגודל הקובץ מתחת ל-25MB
+   - ודא שהקובץ לא פגום
 
-## 📫 Support
+## 📫 תמיכה
 
-For issues, questions, or contributions:
-1. Open an issue on GitHub
-2. Submit a pull request
-3. Contact the maintainer
+לשאלות, בעיות או תרומות:
+1. פתח issue ב-GitHub
+2. שלח pull request
+3. צור קשר עם המתחזק
 
-## 📄 License
+## 📄 רישיון
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+פרויקט זה מופץ תחת רישיון MIT - ראה את קובץ LICENSE לפרטים נוספים.
