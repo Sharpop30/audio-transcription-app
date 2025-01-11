@@ -12,33 +12,83 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        /* עיצוב חדש לכותרת */
         .title-container {
             text-align: center;
             margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: linear-gradient(45deg, #2193b0, #6dd5ed);
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 2rem;
+            background: linear-gradient(120deg, #6a11cb 0%, #2575fc 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(37, 117, 252, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .title-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
         }
         
         .main-title {
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            color: #ffffff;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+        
+        .main-title i {
+            color: #ffd700;
+            margin-left: 15px;
+            font-size: 2.8rem;
+            animation: microphone-pulse 2s ease-in-out infinite;
         }
         
         .subtitle {
-            color: white;
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         
         .copyright {
-            color: white;
+            color: rgba(255,255,255,0.8);
             font-size: 0.9rem;
-            opacity: 0.8;
-            margin-top: 1rem;
+            font-weight: 400;
+            margin-top: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        @keyframes titleGlow {
+            from {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #2575fc;
+            }
+            to {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #2575fc;
+            }
+        }
+        
+        @keyframes microphone-pulse {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 10px #ffd700;
+            }
+            50% {
+                transform: scale(1.1);
+                text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700;
+            }
+            100% {
+                transform: scale(1);
+                text-shadow: 0 0 10px #ffd700;
+            }
         }
 
         .api-instructions {
@@ -239,7 +289,7 @@
     <div class="container">
         <div class="title-container">
             <h1 class="main-title">
-                <i class="fas fa-microphone-alt" style="margin-left: 10px;"></i>
+                <i class="fas fa-microphone-alt"></i>
                 תמלול אודיו חכם
             </h1>
             <p class="subtitle">המרת קבצי אודיו לטקסט באמצעות טכנולוגיית AI מתקדמת</p>
