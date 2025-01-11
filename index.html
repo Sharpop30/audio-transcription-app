@@ -20,67 +20,37 @@
             background: #ffffff;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
         }
         
         .main-title {
-            background: linear-gradient(120deg, #6a11cb 0%, #2575fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 3rem;
-            font-weight: 700;
+            color: #2575fc;
+            font-size: 3.5rem;
+            font-weight: 800;
             margin-bottom: 1rem;
-            animation: titleGlow 2s ease-in-out infinite alternate;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
         
         .main-title i {
-            background: linear-gradient(120deg, #ffd700 0%, #ffa500 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #ffd700;
             margin-left: 15px;
-            font-size: 2.8rem;
+            font-size: 3.2rem;
             animation: microphone-pulse 2s ease-in-out infinite;
         }
         
         .subtitle {
             color: #4a5568;
-            font-size: 1.2rem;
-            font-weight: 500;
+            font-size: 1.4rem;
+            font-weight: 600;
             margin-bottom: 1rem;
         }
         
         .copyright {
             color: #718096;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 400;
             margin-top: 1.5rem;
         }
         
-        @keyframes titleGlow {
-            from {
-                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #2575fc;
-            }
-            to {
-                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #2575fc;
-            }
-        }
-        
-        @keyframes microphone-pulse {
-            0% {
-                transform: scale(1);
-                text-shadow: 0 0 10px #ffd700;
-            }
-            50% {
-                transform: scale(1.1);
-                text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700;
-            }
-            100% {
-                transform: scale(1);
-                text-shadow: 0 0 10px #ffd700;
-            }
-        }
-
         .api-key-section {
             background: linear-gradient(to right, #f8f9fa, #ffffff);
             border-radius: 15px;
@@ -231,6 +201,21 @@
             color: #718096;
             font-size: 0.9rem;
         }
+        
+        @keyframes microphone-pulse {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 10px #ffd700;
+            }
+            50% {
+                transform: scale(1.1);
+                text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700;
+            }
+            100% {
+                transform: scale(1);
+                text-shadow: 0 0 10px #ffd700;
+            }
+        }
     </style>
 </head>
 <body>
@@ -238,20 +223,23 @@
         <div class="title-container">
             <h1 class="main-title">
                 <i class="fas fa-microphone-alt"></i>
-                תמלול אודיו חכם
+                תמלול קולי חכם
             </h1>
-            <p class="subtitle">המרת קבצי אודיו לטקסט באמצעות טכנולוגיית AI מתקדמת</p>
+            <p class="subtitle">הפיכת הקלטות לטקסט בעזרת בינה מלאכותית מתקדמת</p>
             <p class="copyright">© כל הזכויות שמורות לסהר פורר</p>
         </div>
         
         <!-- הסבר על API Key -->
         <div class="alert alert-info mb-4" role="alert">
-            <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>איך להשיג מפתח API?</h5>
-            <p>1. היכנס ל-<a href="https://platform.openai.com/signup" target="_blank">OpenAI Platform</a> והירשם</p>
-            <p>2. לך ל-<a href="https://platform.openai.com/api-keys" target="_blank">API Keys</a> וצור מפתח חדש</p>
-            <p>3. העתק את המפתח והדבק אותו כאן</p>
+            <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>איך מקבלים מפתח API?</h5>
+            <ol class="mb-0">
+                <li>נכנסים לאתר <a href="https://platform.openai.com/signup" target="_blank">OpenAI</a> ונרשמים</li>
+                <li>עוברים לדף <a href="https://platform.openai.com/api-keys" target="_blank">יצירת מפתחות</a></li>
+                <li>לוחצים על "Create new secret key" ומעתיקים את המפתח</li>
+                <li>מדביקים את המפתח בתיבת הטקסט למטה</li>
+            </ol>
             <hr>
-            <p class="mb-0">המפתח נשמר בדפדפן שלך בלבד ולא נשלח לשום שרת</p>
+            <p class="mb-0"><strong>שימו לב:</strong> המפתח נשמר אך ורק במחשב שלכם ולא נשלח לשום שרת חיצוני</p>
         </div>
 
         <!-- API Key Section -->
@@ -320,9 +308,13 @@
 
         <!-- הסבר על היסטוריה -->
         <div class="alert alert-info mb-4" role="alert">
-            <h5 class="alert-heading"><i class="fas fa-history me-2"></i>היסטוריית תמלולים</h5>
-            <p>היסטוריית התמלולים שומרת את 100 התווים הראשונים מכל תמלול ונשמרת בדפדפן שלך בלבד.</p>
-            <p>ההיסטוריה מוגבלת ל-10 תמלולים אחרונים.</p>
+            <h5 class="alert-heading"><i class="fas fa-history me-2"></i>על היסטוריית התמלולים</h5>
+            <ul class="mb-0">
+                <li>המערכת שומרת את 10 התמלולים האחרונים שביצעתם</li>
+                <li>מכל תמלול נשמרים 100 התווים הראשונים בלבד</li>
+                <li>ההיסטוריה נשמרת במחשב שלכם בלבד</li>
+                <li>ניתן למחוק את ההיסטוריה על ידי ניקוי המטמון בדפדפן</li>
+            </ul>
         </div>
 
         <!-- History Section -->
