@@ -234,34 +234,69 @@
             text-decoration: underline;
         }
         
+        /* עיצוב משופר לבחירת שפה */
         .language-select {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #fff6e6, #ffe4cc);
+            border-radius: 15px;
+            border: 2px solid #ff6b00;
+            box-shadow: 0 4px 6px rgba(255, 107, 0, 0.1);
+        }
+
+        .language-select label {
+            display: flex;
+            align-items: center;
             margin-bottom: 1rem;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 1px solid #e2e8f0;
+            color: #2d3748;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .language-select label i {
+            font-size: 1.5rem;
+            color: #ff6b00;
+            margin-left: 0.75rem;
         }
 
         .language-select select {
             width: 100%;
-            padding: 0.5rem;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            font-size: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            font-size: 1.1rem;
             direction: rtl;
+            background-color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .language-select select:hover {
+            border-color: #ff6b00;
+            box-shadow: 0 2px 4px rgba(255, 107, 0, 0.1);
         }
 
         .language-select select:focus {
             border-color: #ff6b00;
-            box-shadow: 0 0 0 0.2rem rgba(255,107,0,0.25);
+            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.25);
             outline: none;
         }
 
-        .language-select label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #4a5568;
-            font-weight: 600;
+        .language-select select option {
+            padding: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* הוספת אייקונים לשפות */
+        .language-option {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+        }
+
+        .language-option i {
+            margin-left: 0.5rem;
+            color: #ff6b00;
         }
         
         @keyframes microphone-pulse {
@@ -344,15 +379,20 @@
                     <p class="mb-0"><strong>הערה:</strong> גודל הקובץ המקסימלי הוא 25MB</p>
                 </div>
                 <div class="language-select">
-                    <label for="targetLanguage"><i class="fas fa-language me-2"></i>בחר שפת יעד לתמלול:</label>
+                    <label for="targetLanguage">
+                        <i class="fas fa-language"></i>
+                        בחר שפת יעד לתמלול
+                    </label>
                     <select id="targetLanguage" class="form-select">
-                        <option value="he">עברית</option>
-                        <option value="ar">ערבית</option>
-                        <option value="en">אנגלית</option>
-                        <option value="zh">סינית</option>
-                        <option value="ru">רוסית</option>
-                        <option value="tr">תורכית</option>
-                        <option value="ja">יפנית</option>
+                        <option value="he" class="language-option">
+                            <i class="fas fa-check"></i>עברית
+                        </option>
+                        <option value="ar" class="language-option">ערבית</option>
+                        <option value="en" class="language-option">אנגלית</option>
+                        <option value="zh" class="language-option">סינית</option>
+                        <option value="ru" class="language-option">רוסית</option>
+                        <option value="tr" class="language-option">תורכית</option>
+                        <option value="ja" class="language-option">יפנית</option>
                     </select>
                 </div>
                 <div id="dropZone" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)" onclick="document.getElementById('audioFile').click()">
