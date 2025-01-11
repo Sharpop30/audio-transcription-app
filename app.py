@@ -1,179 +1,128 @@
 import os
-from flask import Flask, request, jsonify, render_template
-from werkzeug.utils import secure_filename
-from openai import OpenAI
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+import openai
 from pydub import AudioSegment
 import tempfile
 import math
-import json
-import requests
 
 load_dotenv()
 
-# Set FFmpeg path with absolute paths
-app_dir = os.path.dirname(os.path.abspath(__file__))
-ffmpeg_path = os.path.join(app_dir, 'ffmpeg', 'ffmpeg-7.1-essentials_build', 'bin')
-ffmpeg_exe = os.path.join(ffmpeg_path, 'ffmpeg.exe')
-ffprobe_exe = os.path.join(ffmpeg_path, 'ffprobe.exe')
-
-os.environ["PATH"] += os.pathsep + ffmpeg_path
-os.environ["FFMPEG_BINARY"] = ffmpeg_exe
-os.environ["FFPROBE_BINARY"] = ffprobe_exe
-
-# Configure pydub to use the FFmpeg path
-AudioSegment.converter = ffmpeg_exe
-AudioSegment.ffmpeg = ffmpeg_exe
-AudioSegment.ffprobe = ffprobe_exe
-
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['MAX_CONTENT_LENGTH'] = 17 * 1024 * 1024 * 1024  # 17GB max file size
-ALLOWED_EXTENSIONS = {'mp3', 'wav', 'm4a', 'ogg'}
-CHUNK_SIZE = 15 * 1024 * 1024  # 15MB chunks for API limit
 
-# Ensure the uploads directory exists
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+def split_audio(file_path, chunk_duration_ms=300000):  # 5 minutes in milliseconds
+    """Split audio file into chunks if it's longer than chunk_duration_ms."""
+    try:
+        audio = AudioSegment.from_file(file_path)
+        duration_ms = len(audio)
+        
+        if duration_ms <= chunk_duration_ms:
+            return [file_path]  # Return original file if it's short enough
+        
+        # Calculate number of chunks needed
+        num_chunks = math.ceil(duration_ms / chunk_duration_ms)
+        chunks = []
+        
+        for i in range(num_chunks):
+            start_ms = i * chunk_duration_ms
+            end_ms = min((i + 1) * chunk_duration_ms, duration_ms)
+            
+            # Extract chunk
+            chunk = audio[start_ms:end_ms]
+            
+            # Save chunk to temporary file
+            chunk_path = os.path.join(tempfile.gettempdir(), f"chunk_{i}.mp3")
+            chunk.export(chunk_path, format="mp3")
+            chunks.append(chunk_path)
+        
+        return chunks
+    except Exception as e:
+        print(f"Error splitting audio: {str(e)}")
+        raise
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def split_audio(audio_path):
-    """Split audio file into chunks of approximately CHUNK_SIZE."""
-    audio = AudioSegment.from_file(audio_path)
-    duration = len(audio)
-    
-    # Calculate chunk size in milliseconds
-    file_size = os.path.getsize(audio_path)
-    chunk_duration = math.floor((CHUNK_SIZE / file_size) * duration)
-    
-    chunks = []
-    for i in range(0, duration, chunk_duration):
-        chunk = audio[i:i + chunk_duration]
-        with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as temp_file:
-            chunk.export(temp_file.name, format='mp3')
-            chunks.append(temp_file.name)
-    
-    return chunks
-
-def transcribe_chunk_openai(chunk_path, language, api_key):
-    """Transcribe a single chunk of audio using OpenAI."""
+def transcribe_chunk(chunk_path, language, api_key):
+    """Transcribe a single chunk of audio."""
     try:
         with open(chunk_path, 'rb') as audio_file:
             # Create a new OpenAI client with the provided API key
-            client = OpenAI(api_key=api_key)
-            transcript = client.audio.transcriptions.create(
+            openai.api_key = api_key
+            
+            # Call the OpenAI API
+            response = openai.Audio.transcribe(
                 model="whisper-1",
                 file=audio_file,
                 language=language
             )
-            return transcript.text
+            return response["text"]
     except Exception as e:
-        if 'api_key' in str(e).lower():
+        if "Invalid API key" in str(e):
             raise ValueError("Invalid API key. Please check your OpenAI API key.")
         raise e
-
-def transcribe_chunk_groq(chunk_path, language, api_key):
-    """Transcribe a single chunk of audio using GROQ."""
-    headers = {
-        "Authorization": f"Bearer {api_key}"
-    }
-    
-    try:
-        with open(chunk_path, "rb") as file:
-            files = {
-                'file': file,
-                'model': (None, 'whisper-1'),
-            }
-            if language:
-                files['language'] = (None, language)
-            
-            response = requests.post("https://api.groq.com/v1/audio/transcriptions", headers=headers, files=files)
-            response.raise_for_status()
-            return response.json()["text"]
-    except Exception as e:
-        print(f"GROQ Error: {str(e)}")
-        raise
 
 def cleanup_chunks(chunk_files):
     """Remove temporary chunk files."""
     for chunk_file in chunk_files:
-        try:
-            os.remove(chunk_file)
-        except Exception:
-            pass
-
-@app.route('/')
-def index():
-    return render_template('index.html')
+        if os.path.exists(chunk_file):
+            try:
+                os.remove(chunk_file)
+            except Exception as e:
+                print(f"Error removing chunk file {chunk_file}: {str(e)}")
 
 @app.route('/transcribe', methods=['POST'])
 def transcribe_audio():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file provided'}), 400
-    
-    file = request.files['file']
-    target_language = request.form.get('language', 'en')
-    api_key = request.form.get('api_key')
-    api_provider = request.form.get('api_provider', 'openai')  # Default to OpenAI
-    
-    if not api_key:
-        return jsonify({'error': 'Please provide an OpenAI API key'}), 400
-    
-    if file.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
-    
-    if not allowed_file(file.filename):
-        return jsonify({'error': 'File type not allowed'}), 400
-    
     try:
-        # Save the uploaded file
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+        
+        file = request.files['file']
+        target_language = request.form.get('language', 'en')
+        api_key = request.form.get('api_key')
+        
+        if not api_key:
+            return jsonify({'error': 'Please provide an OpenAI API key'}), 400
+        
+        # Save uploaded file temporarily
+        temp_dir = tempfile.gettempdir()
+        filepath = os.path.join(temp_dir, file.filename)
         file.save(filepath)
         
-        file_size = os.path.getsize(filepath)
-        
-        if file_size > CHUNK_SIZE:
-            # Large file handling
-            chunks = split_audio(filepath)
-            transcriptions = []
+        try:
+            # Get file size
+            file_size = os.path.getsize(filepath)
+            large_file_threshold = 25 * 1024 * 1024  # 25MB
             
-            try:
-                for chunk in chunks:
-                    if api_provider == 'groq':
-                        chunk_text = transcribe_chunk_groq(chunk, target_language, api_key)
-                    else:  # Default to OpenAI
-                        chunk_text = transcribe_chunk_openai(chunk, target_language, api_key)
-                    transcriptions.append(chunk_text)
+            if file_size > large_file_threshold:
+                # Handle large file
+                chunks = split_audio(filepath)
+                transcriptions = []
                 
-                # Combine all transcriptions
-                final_transcription = ' '.join(transcriptions)
-            finally:
-                # Clean up chunk files
-                cleanup_chunks(chunks)
-        else:
-            # Small file handling
-            if api_provider == 'groq':
-                final_transcription = transcribe_chunk_groq(filepath, target_language, api_key)
-            else:  # Default to OpenAI
-                final_transcription = transcribe_chunk_openai(filepath, target_language, api_key)
-        
-        # Clean up the original uploaded file
-        os.remove(filepath)
-        
-        return jsonify({
-            'success': True,
-            'transcription': final_transcription
-        })
-        
-    except ValueError as ve:
-        return jsonify({'error': str(ve)}), 400
+                try:
+                    for chunk in chunks:
+                        chunk_text = transcribe_chunk(chunk, target_language, api_key)
+                        transcriptions.append(chunk_text)
+                    
+                    # Combine all transcriptions
+                    final_transcription = ' '.join(transcriptions)
+                finally:
+                    cleanup_chunks(chunks)
+            else:
+                # Small file handling
+                final_transcription = transcribe_chunk(filepath, target_language, api_key)
+            
+            # Clean up the original uploaded file
+            os.remove(filepath)
+            
+            return jsonify({
+                'transcription': final_transcription
+            })
+            
+        except ValueError as ve:
+            return jsonify({'error': str(ve)}), 400
+        except Exception as e:
+            return jsonify({'error': f'Transcription failed: {str(e)}'}), 500
+            
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    # Use environment variables for host and port
-    port = int(os.environ.get('PORT', 5000))
-    debug = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
-    app.run(host='0.0.0.0', port=port, debug=debug)
+    app.run(debug=True)
