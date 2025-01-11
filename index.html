@@ -300,10 +300,23 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">העלאת קובץ אודיו</h5>
+                <div class="alert alert-info mb-3">
+                    <h6 class="alert-heading mb-2"><i class="fas fa-info-circle me-2"></i>פורמטים נתמכים:</h6>
+                    <ul class="mb-0">
+                        <li>קבצי MP3 (*.mp3)</li>
+                        <li>קבצי WAV (*.wav)</li>
+                        <li>קבצי M4A (*.m4a)</li>
+                        <li>קבצי MP4 (*.mp4)</li>
+                        <li>קבצי MPEG (*.mpeg)</li>
+                        <li>קבצי WEBM (*.webm)</li>
+                    </ul>
+                    <hr>
+                    <p class="mb-0"><strong>הערה:</strong> גודל הקובץ המקסימלי הוא 25MB</p>
+                </div>
                 <div id="dropZone" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)" onclick="document.getElementById('audioFile').click()">
                     <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
                     <p>גרור קובץ אודיו לכאן או לחץ לבחירת קובץ</p>
-                    <input type="file" id="audioFile" accept="audio/*" style="display: none;" onchange="handleAudioFile()">
+                    <input type="file" id="audioFile" accept="audio/*,.mp3,.wav,.m4a,.mp4,.mpeg,.webm" style="display: none;" onchange="handleAudioFile()">
                 </div>
                 <div id="progressStatus" class="mt-3" style="display: none;">
                     <div class="progress">
