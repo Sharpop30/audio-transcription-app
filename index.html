@@ -201,6 +201,38 @@
             color: #718096;
             font-size: 0.9rem;
         }
+
+        .history-preview {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .history-full {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-expand {
+            font-size: 0.9rem;
+            color: #2575fc;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .btn-expand:hover {
+            color: #1a56db;
+            text-decoration: underline;
+        }
         
         @keyframes microphone-pulse {
             0% {
@@ -464,10 +496,9 @@
 
         function addToHistory(text, timestamp) {
             const history = JSON.parse(localStorage.getItem('transcriptionHistory') || '[]');
-            const summary = text.length > 100 ? text.substring(0, 100) + '...' : text;
             
             history.unshift({
-                text: summary,
+                text: text,
                 timestamp: timestamp
             });
             
@@ -485,16 +516,40 @@
             
             if (history.length > 0) {
                 document.getElementById('historyCard').style.display = 'block';
-                historyList.innerHTML = history.map(item => `
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <small class="text-muted">${new Date(item.timestamp).toLocaleString('he-IL')}</small>
+                historyList.innerHTML = history.map((item, index) => {
+                    const preview = item.text.length > 200 ? item.text.substring(0, 200) + '...' : item.text;
+                    return `
+                        <div class="list-group-item history-item">
+                            <div class="d-flex w-100 justify-content-between mb-2">
+                                <small class="history-timestamp">${new Date(item.timestamp).toLocaleString('he-IL')}</small>
+                            </div>
+                            <div class="history-preview">${preview}</div>
+                            ${item.text.length > 200 ? `
+                                <button class="btn-expand" onclick="toggleHistoryItem(${index})">
+                                    <i class="fas fa-chevron-down me-1"></i>קרא עוד
+                                </button>
+                                <div class="history-full" id="history-full-${index}">
+                                    ${item.text}
+                                </div>
+                            ` : ''}
                         </div>
-                        <p class="mb-1" style="white-space: pre-wrap;">${item.text}</p>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             } else {
                 document.getElementById('historyCard').style.display = 'none';
+            }
+        }
+
+        function toggleHistoryItem(index) {
+            const fullText = document.getElementById(`history-full-${index}`);
+            const button = fullText.previousElementSibling;
+            
+            if (fullText.style.display === 'none' || !fullText.style.display) {
+                fullText.style.display = 'block';
+                button.innerHTML = '<i class="fas fa-chevron-up me-1"></i>הסתר';
+            } else {
+                fullText.style.display = 'none';
+                button.innerHTML = '<i class="fas fa-chevron-down me-1"></i>קרא עוד';
             }
         }
 
