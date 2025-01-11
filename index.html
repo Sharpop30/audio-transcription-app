@@ -234,6 +234,36 @@
             text-decoration: underline;
         }
         
+        .language-select {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .language-select select {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-size: 1rem;
+            direction: rtl;
+        }
+
+        .language-select select:focus {
+            border-color: #ff6b00;
+            box-shadow: 0 0 0 0.2rem rgba(255,107,0,0.25);
+            outline: none;
+        }
+
+        .language-select label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 600;
+        }
+        
         @keyframes microphone-pulse {
             0% {
                 transform: scale(1);
@@ -312,6 +342,18 @@
                     </ul>
                     <hr>
                     <p class="mb-0"><strong>הערה:</strong> גודל הקובץ המקסימלי הוא 25MB</p>
+                </div>
+                <div class="language-select">
+                    <label for="targetLanguage"><i class="fas fa-language me-2"></i>בחר שפת יעד לתמלול:</label>
+                    <select id="targetLanguage" class="form-select">
+                        <option value="he">עברית</option>
+                        <option value="ar">ערבית</option>
+                        <option value="en">אנגלית</option>
+                        <option value="zh">סינית</option>
+                        <option value="ru">רוסית</option>
+                        <option value="tr">תורכית</option>
+                        <option value="ja">יפנית</option>
+                    </select>
                 </div>
                 <div id="dropZone" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)" onclick="document.getElementById('audioFile').click()">
                     <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
@@ -439,6 +481,7 @@
             const fileInput = document.getElementById('audioFile');
             const file = fileInput.files[0];
             const apiKey = localStorage.getItem('openai_api_key');
+            const targetLanguage = document.getElementById('targetLanguage').value;
             
             if (!apiKey) {
                 showError('נא להזין מפתח API תקין');
@@ -455,6 +498,8 @@
             const formData = new FormData();
             formData.append('file', file);
             formData.append('model', 'whisper-1');
+            formData.append('language', targetLanguage);
+            formData.append('response_format', 'json');
 
             try {
                 const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
