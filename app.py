@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 from pydub import AudioSegment
 import tempfile
 import math
+import json
+import requests
 
 load_dotenv()
 
@@ -54,8 +56,8 @@ def split_audio(audio_path):
     
     return chunks
 
-def transcribe_chunk(chunk_path, language, api_key):
-    """Transcribe a single chunk of audio."""
+def transcribe_chunk_openai(chunk_path, language, api_key):
+    """Transcribe a single chunk of audio using OpenAI."""
     try:
         with open(chunk_path, 'rb') as audio_file:
             # Create a new OpenAI client with the provided API key
@@ -70,6 +72,28 @@ def transcribe_chunk(chunk_path, language, api_key):
         if 'api_key' in str(e).lower():
             raise ValueError("Invalid API key. Please check your OpenAI API key.")
         raise e
+
+def transcribe_chunk_groq(chunk_path, language, api_key):
+    """Transcribe a single chunk of audio using GROQ."""
+    headers = {
+        "Authorization": f"Bearer {api_key}"
+    }
+    
+    try:
+        with open(chunk_path, "rb") as file:
+            files = {
+                'file': file,
+                'model': (None, 'whisper-1'),
+            }
+            if language:
+                files['language'] = (None, language)
+            
+            response = requests.post("https://api.groq.com/v1/audio/transcriptions", headers=headers, files=files)
+            response.raise_for_status()
+            return response.json()["text"]
+    except Exception as e:
+        print(f"GROQ Error: {str(e)}")
+        raise
 
 def cleanup_chunks(chunk_files):
     """Remove temporary chunk files."""
@@ -91,6 +115,7 @@ def transcribe_audio():
     file = request.files['file']
     target_language = request.form.get('language', 'en')
     api_key = request.form.get('api_key')
+    api_provider = request.form.get('api_provider', 'openai')  # Default to OpenAI
     
     if not api_key:
         return jsonify({'error': 'Please provide an OpenAI API key'}), 400
@@ -116,7 +141,10 @@ def transcribe_audio():
             
             try:
                 for chunk in chunks:
-                    chunk_text = transcribe_chunk(chunk, target_language, api_key)
+                    if api_provider == 'groq':
+                        chunk_text = transcribe_chunk_groq(chunk, target_language, api_key)
+                    else:  # Default to OpenAI
+                        chunk_text = transcribe_chunk_openai(chunk, target_language, api_key)
                     transcriptions.append(chunk_text)
                 
                 # Combine all transcriptions
@@ -126,7 +154,10 @@ def transcribe_audio():
                 cleanup_chunks(chunks)
         else:
             # Small file handling
-            final_transcription = transcribe_chunk(filepath, target_language, api_key)
+            if api_provider == 'groq':
+                final_transcription = transcribe_chunk_groq(filepath, target_language, api_key)
+            else:  # Default to OpenAI
+                final_transcription = transcribe_chunk_openai(filepath, target_language, api_key)
         
         # Clean up the original uploaded file
         os.remove(filepath)
