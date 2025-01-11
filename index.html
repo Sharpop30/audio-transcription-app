@@ -12,6 +12,64 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        .title-container {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(45deg, #2193b0, #6dd5ed);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .main-title {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            color: white;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+        
+        .copyright {
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 1rem;
+        }
+
+        .api-instructions {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-right: 4px solid #2193b0;
+            text-align: right;
+        }
+        
+        .api-instructions h3 {
+            color: #2193b0;
+            margin-bottom: 1rem;
+        }
+        
+        .api-instructions ol {
+            margin-right: 1.5rem;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .api-instructions a {
+            color: #2193b0;
+            text-decoration: none;
+        }
+        
+        .api-instructions a:hover {
+            text-decoration: underline;
+        }
+
         .header-container {
             text-align: center;
             padding: 2rem 0;
@@ -114,49 +172,6 @@
             margin-top: 0.5rem;
         }
 
-        .title-container {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: linear-gradient(45deg, #2193b0, #6dd5ed);
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .main-title {
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .copyright {
-            color: white;
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-top: 1rem;
-        }
-        
-        .api-instructions {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            border-right: 4px solid #2193b0;
-            text-align: right;
-            direction: rtl;
-        }
-        
-        .api-instructions h3 {
-            color: #2193b0;
-            margin-bottom: 0.5rem;
-        }
-        
-        .api-instructions ol {
-            margin-right: 1.5rem;
-            color: #555;
-        }
-
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -224,7 +239,7 @@
     <div class="container">
         <div class="title-container">
             <h1 class="main-title">תמלול אודיו חכם</h1>
-            <p style="color: white;">המרת קבצי אודיו לטקסט באמצעות טכנולוגיית AI מתקדמת</p>
+            <p class="subtitle">המרת קבצי אודיו לטקסט באמצעות טכנולוגיית AI מתקדמת</p>
             <p class="copyright">© כל הזכויות שמורות לסהר פורר</p>
         </div>
         
